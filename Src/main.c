@@ -49,7 +49,7 @@ currentTimer;
 currectTimerState;
 
 timerCount = 4;
-timersTic[2][4] = {{0,0,0,0},{0,0,0,0}};
+timersTic[2][4] = {{50,0,0,0},{30,0,0,0}};
 enum timerTypes timersType[2][4] = {{seconds,seconds,seconds,seconds},{seconds,seconds,seconds,seconds}};
 /* USER CODE END PV */
 
@@ -183,13 +183,8 @@ static void MX_TIM7_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   /* USER CODE BEGIN TIM7_Init 1 */
-  int timerSec = 10;//seconds
-  int clockspeed = 8000000;//clock speed not sure how to get will change
-  int period = 0;
   int prescaler = 10000;
-  int max = 65535;//not sure if i need (16 bit max - 1) what is the value of an int for stm32
-  //int currentDelay = (period + 1) * (prescaler + 1)/(clockspeed);
-  period = ((timerSec * clockspeed) / (prescaler + 1))-1;
+  int period = GetDesiredPeriod(10,prescaler);
 
   /* USER CODE END TIM7_Init 1 */
   htim7.Instance = TIM7;

@@ -33,6 +33,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
+#include "Timer.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
