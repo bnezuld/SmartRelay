@@ -273,11 +273,55 @@ void TIM7_IRQHandler(void)
   int read = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_3);
   if(read == 1)//timer set when on(relay off)
   {
-	  TIM7->ARR = GetDesiredPeriod(30,TIM7->PSC);
+	  float offset = 1;
+	  /*switch(timersType[0][0]) {
+	  	  	  case centi:
+	  	  		offset = .01;
+	  	  		TIM7->PSC = 100;
+	  	  		  break;
+	  	  	  case seconds:
+	  	  		offset = 1;
+	  	  		TIM7->PSC = 1000;
+	  	  		  break;
+	  	  	  case minutes:
+	  	  		TIM7->PSC = 10000;
+	  	  		offset = 60;
+	  	  		  break;
+	  	  	  case hours:
+	  	  		TIM7->PSC = 65535;
+	  	  		offset = 60 * 60;
+	  	  		  break;
+	  	  }*/
+	  if(timersType[0][0] == centi)
+	  {
+		  offset = .01;
+		  //TIM7->PSC = 100;
+	  }else if(timersType[0][0] == minutes)
+	  {
+		  offset = 60;
+		  //TIM7->PSC = 10000;
+	  }else
+	  {
+		  offset = 1;
+	  }
+	  TIM7->ARR = GetDesiredPeriod(timersTic[0][0] * offset,TIM7->PSC);
 	  //TIM7->EGR = TIM_EGR_UG;//does not seem to be needed
   }else//timer set for off(relay on)
   {
-	  TIM7->ARR = GetDesiredPeriod(50,TIM7->PSC);
+	  float offset = 1;
+	  if(timersType[1][0] == centi)
+	  {
+		  offset = .01;
+		  //TIM7->PSC = 100;
+	  }else if(timersType[1][0] == minutes)
+	  {
+		  offset = 60;
+		  //TIM7->PSC = 10000;
+	  }else
+	  {
+		  offset = 1;
+	  }
+	  TIM7->ARR = GetDesiredPeriod(timersTic[1][0] * offset,TIM7->PSC);
 	  //TIM7->EGR = TIM_EGR_UG;//does not seem to be needed
   }
   /* USER CODE END TIM7_IRQn 0 */

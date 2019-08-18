@@ -68,16 +68,16 @@ void Error_Handler(void);
 #define TCK_SWCLK_Pin GPIO_PIN_14
 #define TCK_SWCLK_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
-enum timerTypes{milli,seconds,minutes,hours};
+enum timerTypes{centi,seconds,minutes,hours};
 enum displayState{tic,type};
 
-enum displayState timerState;
-int currentTimer;
-int currectTimerState;
+unsigned int timerState;
+unsigned int currentTimer;
+unsigned int currectTimerState;
 
-int timerCount;
-int timersTic[2][4];
-enum timerTypes timersType[2][4];
+char timerCount;
+char timersTic[2][4];
+char timersType[2][4];
 
 bool displayChange;
 /* USER CODE END Private defines */

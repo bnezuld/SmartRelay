@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/bnezu/Atollic/TrueSTUDIO/STM32_workspace_9.0/SmartRelay/Inc
+HeaderPath=C:/Users/bnezu/Documents/GitHub/SmartRelay/Inc
 HeaderFiles=stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;
-SourcePath=C:/Users/bnezu/Atollic/TrueSTUDIO/STM32_workspace_9.0/SmartRelay/Src
+SourcePath=C:/Users/bnezu/Documents/GitHub/SmartRelay/Src
 SourceFiles=stm32f1xx_it.c;stm32f1xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]

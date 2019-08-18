@@ -45,12 +45,12 @@
 TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN PV */
-currentTimer;
-currectTimerState;
+unsigned int currentTimer;
+unsigned int currectTimerState;
 
-timerCount = 4;
-timersTic[2][4] = {{50,0,0,0},{30,0,0,0}};
-enum timerTypes timersType[2][4] = {{seconds,seconds,seconds,seconds},{seconds,seconds,seconds,seconds}};
+char timerCount = 4;
+char timersTic[2][4] = {{5,0,0,0},{3,0,0,0}};
+char timersType[2][4] = {{seconds,seconds,seconds,seconds},{seconds,seconds,seconds,seconds}};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -118,11 +118,11 @@ int main(void)
 		displayChange = false;
 
 		setCursor(0, 0);
-		int size1 = sprintf(str, "timer%s %-2d %-3d", currectTimerState == 0? "Off" : "On", currentTimer, timersTic[currectTimerState][currentTimer]);
+		int size1 = sprintf(str, "timer%s %-2d %-3u", currectTimerState == 0? "Off" : "On", currentTimer, timersTic[currectTimerState][currentTimer]);
 		print(str);
 
 		setCursor(0, 1);
-		int size2 = sprintf(str, "type%s %-2d %-3d", currectTimerState == 0? "Off" : "On", currentTimer, timersType[currectTimerState][currentTimer]);
+		int size2 = sprintf(str, "type%s %-2d %-3u", currectTimerState == 0? "Off" : "On", currentTimer, timersType[currectTimerState][currentTimer]);
 		print(str);
 
 		setCursor((timerState? size2 : size1) - 3, timerState);
@@ -158,8 +158,8 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV16;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV16;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
@@ -183,7 +183,7 @@ static void MX_TIM7_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   /* USER CODE BEGIN TIM7_Init 1 */
-  int prescaler = 10000;
+  int prescaler = 1000;
   int period = GetDesiredPeriod(10,prescaler);
 
   /* USER CODE END TIM7_Init 1 */
