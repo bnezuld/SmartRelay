@@ -269,7 +269,17 @@ void EXTI15_10_IRQHandler(void)
 void TIM7_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM7_IRQn 0 */
-
+  HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_3);
+  int read = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_3);
+  if(read == 1)//timer set when on(relay off)
+  {
+	  TIM7->ARR = GetDesiredPeriod(30,TIM7->PSC);
+	  //TIM7->EGR = TIM_EGR_UG;//does not seem to be needed
+  }else//timer set for off(relay on)
+  {
+	  TIM7->ARR = GetDesiredPeriod(50,TIM7->PSC);
+	  //TIM7->EGR = TIM_EGR_UG;//does not seem to be needed
+  }
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
   /* USER CODE BEGIN TIM7_IRQn 1 */
