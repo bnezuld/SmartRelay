@@ -269,7 +269,33 @@ void EXTI15_10_IRQHandler(void)
 void TIM7_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM7_IRQn 0 */
+  HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_3);
+  int read = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_3);
+  if(read == 1)//timer set when on(relay off)
+  {
+	  int timerSec = 30;//seconds
+	  int clockspeed = 8000000;//clock speed not sure how to get will change
+	  int period = 0;
+	  int prescaler = 10000;
+	  int max = 65535;//not sure if i need (16 bit max - 1) what is the value of an int for stm32
+	  //int currentDelay = (period + 1) * (prescaler + 1)/(clockspeed);
+	  period = ((timerSec * clockspeed) / (prescaler + 1))-1;
 
+	  TIM7->ARR = period;
+	  //TIM7->EGR = TIM_EGR_UG;
+  }else//timer set for off(relay on)
+  {
+	  int timerSec = 50;//seconds
+	  int clockspeed = 8000000;//clock speed not sure how to get will change
+	  int period = 0;
+	  int prescaler = 10000;
+	  int max = 65535;//not sure if i need (16 bit max - 1) what is the value of an int for stm32
+	  //int currentDelay = (period + 1) * (prescaler + 1)/(clockspeed);
+	  period = ((timerSec * clockspeed) / (prescaler + 1))-1;
+
+	  TIM7->ARR = period;
+	  //TIM7->EGR = TIM_EGR_UG;
+  }
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
   /* USER CODE BEGIN TIM7_IRQn 1 */

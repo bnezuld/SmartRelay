@@ -97,6 +97,8 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Start_IT(&htim7);
+
   HAL_GPIO_WritePin(GPIOC,GPIO_PIN_3,1);//set high to keep current going through NO(Normally Open)
   LiquidCrystal(GPIOA, GPIO_PIN_15, 0, GPIO_PIN_12, GPIO_PIN_11, GPIO_PIN_10, GPIO_PIN_9, GPIO_PIN_8);
 
@@ -181,12 +183,19 @@ static void MX_TIM7_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   /* USER CODE BEGIN TIM7_Init 1 */
+  int timerSec = 10;//seconds
+  int clockspeed = 8000000;//clock speed not sure how to get will change
+  int period = 0;
+  int prescaler = 10000;
+  int max = 65535;//not sure if i need (16 bit max - 1) what is the value of an int for stm32
+  //int currentDelay = (period + 1) * (prescaler + 1)/(clockspeed);
+  period = ((timerSec * clockspeed) / (prescaler + 1))-1;
 
   /* USER CODE END TIM7_Init 1 */
   htim7.Instance = TIM7;
-  htim7.Init.Prescaler = 1;
+  htim7.Init.Prescaler = prescaler;
   htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim7.Init.Period = 2;
+  htim7.Init.Period = period;
   htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
   {
