@@ -34,6 +34,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
 #include "Timer.h"
+#include "Menu.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -68,7 +69,6 @@ void Error_Handler(void);
 #define TCK_SWCLK_Pin GPIO_PIN_14
 #define TCK_SWCLK_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
-enum timerTypes{centi,seconds,minutes,hours};
 enum displayState{tic,type};
 
 unsigned int timerState;

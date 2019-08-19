@@ -226,6 +226,24 @@ void EXTI15_10_IRQHandler(void)
 			}
 		}
 	}
+	if(read_11)
+		{
+			timerState--;
+			if(timerState < tic)
+			{
+				timerState = tic;
+				currectTimerState++;
+				if(currectTimerState > 1)
+				{
+					currectTimerState = 0;
+					currentTimer++;
+					if(currentTimer >= timerCount)
+					{
+						currentTimer = 0;
+					}
+				}
+			}
+		}
 	if(read_12)
 	{
 		if(timerState == tic)
@@ -295,34 +313,44 @@ void TIM7_IRQHandler(void)
 	  if(timersType[0][0] == centi)
 	  {
 		  offset = .01;
-		  //TIM7->PSC = 100;
+		  TIM7->PSC = 10000;
 	  }else if(timersType[0][0] == minutes)
 	  {
 		  offset = 60;
-		  //TIM7->PSC = 10000;
+		  TIM7->PSC = 10000;
+	  }else if(timersType[0][0] == hours)
+	  {
+		  offset = 60 * 60;
+		  TIM7->PSC = 65535;
 	  }else
 	  {
 		  offset = 1;
+		  TIM7->PSC = 10000;
 	  }
 	  TIM7->ARR = GetDesiredPeriod(timersTic[0][0] * offset,TIM7->PSC);
-	  //TIM7->EGR = TIM_EGR_UG;//does not seem to be needed
+	  TIM7->EGR = TIM_EGR_UG;//seems to only be needed when changing prescaler(PSC)
   }else//timer set for off(relay on)
   {
 	  float offset = 1;
 	  if(timersType[1][0] == centi)
-	  {
-		  offset = .01;
-		  //TIM7->PSC = 100;
-	  }else if(timersType[1][0] == minutes)
-	  {
-		  offset = 60;
-		  //TIM7->PSC = 10000;
-	  }else
-	  {
-		  offset = 1;
-	  }
+	  	  {
+	  		  offset = .01;
+	  		  TIM7->PSC = 10000;
+	  	  }else if(timersType[1][0] == minutes)
+	  	  {
+	  		  offset = 60;
+	  		  TIM7->PSC = 10000;
+	  	  }else if(timersType[1][0] == hours)
+	  	  {
+	  		  offset = 60 * 60;
+	  		  TIM7->PSC = 65535;
+	  	  }else
+	  	  {
+	  		  offset = 1;
+	  		  TIM7->PSC = 10000;
+	  	  }
 	  TIM7->ARR = GetDesiredPeriod(timersTic[1][0] * offset,TIM7->PSC);
-	  //TIM7->EGR = TIM_EGR_UG;//does not seem to be needed
+	  TIM7->EGR = TIM_EGR_UG;//seems to only be needed when changing prescaler(PSC)
   }
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);

@@ -13,7 +13,7 @@ int GetDesiredPeriod(float DesiredDelay,int currentPrescaler)//seconds(desired s
 	int period = 0;
 	period = ((DesiredDelay * clockspeed) / (currentPrescaler + 1));
 
-	if(period > INT_16BIT_MAX)
+	if(period >= INT_16BIT_MAX)
 		period = INT_16BIT_MAX - 1;
 	if(period <= 0)
 		period = 1;

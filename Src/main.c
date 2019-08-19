@@ -122,7 +122,7 @@ int main(void)
 		print(str);
 
 		setCursor(0, 1);
-		int size2 = sprintf(str, "type%s %-2d %-3u", currectTimerState == 0? "Off" : "On", currentTimer, timersType[currectTimerState][currentTimer]);
+		int size2 = sprintf(str, "type%s %-2d %s", currectTimerState == 0? "Off" : "On", currentTimer, GetTimeType(timersType[currectTimerState][currentTimer]));
 		print(str);
 
 		setCursor((timerState? size2 : size1) - 3, timerState);
