@@ -56,6 +56,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim7;
 /* USER CODE BEGIN EV */
 
@@ -198,38 +199,39 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles TIM4 global interrupt.
+  */
+void TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM4_IRQn 0 */
+	debouncer = 0;
+  /* USER CODE END TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM4_IRQn 1 */
+	HAL_TIM_Base_Stop_IT(&htim4);
+
+  /* USER CODE END TIM4_IRQn 1 */
+}
+
+/**
   * @brief This function handles EXTI line[15:10] interrupts.
   */
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-	int read_10 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_10);
-	int read_11 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_11);
-	int read_12 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_12);
-	int read_15 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
-
-	if(read_10)
+	if(debouncer == 0)
 	{
-		timerState++;
-		if(timerState > type)
+		debouncer = 1;
+
+		int read_10 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_10);
+		int read_11 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_11);
+		int read_12 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_12);
+		int read_15 = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
+
+		if(read_10)
 		{
-			timerState = tic;
-			currectTimerState++;
-			if(currectTimerState > 1)
-			{
-				currectTimerState = 0;
-				currentTimer++;
-				if(currentTimer >= timerCount)
-				{
-					currentTimer = 0;
-				}
-			}
-		}
-	}
-	if(read_11)
-		{
-			timerState--;
-			if(timerState < tic)
+			timerState++;
+			if(timerState > type)
 			{
 				timerState = tic;
 				currectTimerState++;
@@ -244,33 +246,56 @@ void EXTI15_10_IRQHandler(void)
 				}
 			}
 		}
-	if(read_12)
-	{
-		if(timerState == tic)
+		if(read_11)
+			{
+				timerState--;
+				if(timerState < tic)
+				{
+					timerState = tic;
+					currectTimerState++;
+					if(currectTimerState > 1)
+					{
+						currectTimerState = 0;
+						currentTimer++;
+						if(currentTimer >= timerCount)
+						{
+							currentTimer = 0;
+						}
+					}
+				}
+			}
+		if(read_12)
 		{
-			timersTic[currectTimerState][currentTimer]++;
-		}else if(timerState == type)
-		{
-			timersType[currectTimerState][currentTimer]++;
+			if(timerState == tic)
+			{
+				timersTic[currectTimerState][currentTimer]++;
+			}else if(timerState == type)
+			{
+				timersType[currectTimerState][currentTimer]++;
+			}
 		}
-	}
 
-	if(read_15)
-	{
-		if(timerState == tic)
+		if(read_15)
 		{
-			timersTic[currectTimerState][currentTimer]--;
-		}else if(timerState == type)
-		{
-			timersType[currectTimerState][currentTimer]--;
+			if(timerState == tic)
+			{
+				timersTic[currectTimerState][currentTimer]--;
+			}else if(timerState == type)
+			{
+				timersType[currectTimerState][currentTimer]--;
+			}
 		}
+
+		if(read_15 || read_12 || read_11 || read_10)
+		{
+			displayChange = true;
+		}
+
+		TIM4->ARR = GetDesiredPeriod(.2,TIM4->PSC);
+
 	}
 
-	if(read_15 || read_12 || read_11 || read_10)
-	{
-		displayChange = true;
-	}
-
+	HAL_TIM_Base_Start_IT(&htim4);
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_11);

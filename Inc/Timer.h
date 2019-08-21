@@ -6,4 +6,7 @@
  */
 #define INT_16BIT_MAX 65536
 
+int debouncer;
+
 int GetDesiredPeriod(float DesiredDelay,int currentPrescaler);
+
