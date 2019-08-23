@@ -46,8 +46,8 @@ TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN PV */
-unsigned int currentTimer;
-unsigned int currectTimerState;
+unsigned char currentTimer;
+unsigned char currectTimerState;
 
 char timerCount = 4;
 char timersTic[2][4] = {{5,0,0,0},{3,0,0,0}};
@@ -77,7 +77,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
+
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -122,7 +122,7 @@ int main(void)
 		displayChange = false;
 
 		setCursor(0, 0);
-		int size1 = sprintf(str, "timer%s %-2d %-3u", currectTimerState == 0? "Off" : "On", currentTimer, timersTic[currectTimerState][currentTimer]);
+		int size1 = sprintf(str, "tic%s %-2d %-3u", currectTimerState == 0? "Off" : "On", currentTimer, timersTic[currectTimerState][currentTimer]);
 		print(str);
 
 		setCursor(0, 1);
@@ -235,8 +235,8 @@ static void MX_TIM7_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   /* USER CODE BEGIN TIM7_Init 1 */
-  int prescaler = 1000;
-  int period = GetDesiredPeriod(10,prescaler);
+  int period = GetDesiredPeriodandPrescaler(10);
+  int prescaler = period;
 
   /* USER CODE END TIM7_Init 1 */
   htim7.Instance = TIM7;

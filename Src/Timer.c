@@ -7,16 +7,15 @@
 
 #include "Timer.h"
 
-int GetDesiredPeriod(float DesiredDelay,int currentPrescaler)//seconds(desired second for period)
+
+unsigned int GetDesiredPeriodandPrescaler(float DesiredDelay)//seconds(desired second for period)
 {
-	int clockspeed = 62500;//clock speed not sure how to get will change
-	int period = 0;
-	period = ((DesiredDelay * clockspeed) / (currentPrescaler + 1));
+	unsigned int clockspeed = 62500;//clock speed(timer clock? or system clock? or ABP1/2) not sure how to get will change
+	unsigned int periodPrescaler = 0;
+	periodPrescaler = sqrt((double)clockspeed * (double)DesiredDelay)+1;
 
-	if(period >= INT_16BIT_MAX)
-		period = INT_16BIT_MAX - 1;
-	if(period <= 0)
-		period = 1;
+	if(periodPrescaler >= INT_16BIT_MAX)
+		periodPrescaler = INT_16BIT_MAX - 1;
 
-	return period;
+	return periodPrescaler;
 }

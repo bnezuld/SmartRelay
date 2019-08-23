@@ -4,9 +4,11 @@
  *  Created on: Aug 18, 2019
  *      Author: bnezu
  */
+#include <math.h> //sqrt
+
 #define INT_16BIT_MAX 65536
 
 int debouncer;
 
-int GetDesiredPeriod(float DesiredDelay,int currentPrescaler);
+unsigned int GetDesiredPeriodandPrescaler(float DesiredDelay);
 

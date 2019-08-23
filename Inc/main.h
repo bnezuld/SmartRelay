@@ -32,7 +32,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdbool.h>
+#include <stdbool.h> //booleans
 #include "Timer.h"
 #include "Menu.h"
 /* USER CODE END Includes */
@@ -71,9 +71,9 @@ void Error_Handler(void);
 /* USER CODE BEGIN Private defines */
 enum displayState{tic,type};
 
-unsigned int timerState;
-unsigned int currentTimer;
-unsigned int currectTimerState;
+unsigned char timerState;
+unsigned char currentTimer;
+unsigned char currectTimerState;
 
 char timerCount;
 char timersTic[2][4];
