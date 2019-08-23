@@ -46,12 +46,12 @@ TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN PV */
-unsigned char currentTimer;
-unsigned char currectTimerState;
+unsigned char currentTimer = 0;
+unsigned char currectTimerState = 0;
+unsigned char currectTimerVal = 0;
 
-char timerCount = 4;
-char timersTic[2][4] = {{5,0,0,0},{3,0,0,0}};
-char timersType[2][4] = {{seconds,seconds,seconds,seconds},{seconds,seconds,seconds,seconds}};
+unsigned char timerCount = 4;
+unsigned char timer[2][4][4] = {{{0,5,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}},{{0,3,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -122,14 +122,24 @@ int main(void)
 		displayChange = false;
 
 		setCursor(0, 0);
-		int size1 = sprintf(str, "tic%s %-2d %-3u", currectTimerState == 0? "Off" : "On", currentTimer, timersTic[currectTimerState][currentTimer]);
+		int size1 = sprintf(str, "- %1d %02u:%02u:%02u.%02u"
+				, currentTimer
+				, timer[0][currentTimer][3]
+				, timer[0][currentTimer][2]
+				, timer[0][currentTimer][1]
+				, timer[0][currentTimer][0]);
 		print(str);
 
 		setCursor(0, 1);
-		int size2 = sprintf(str, "type%s %-2d %s", currectTimerState == 0? "Off" : "On", currentTimer, GetTimeType(timersType[currectTimerState][currentTimer]));
+		int size2 = sprintf(str, "+ %1d %02u:%02u:%02u.%02u"
+				, currentTimer
+				, timer[1][currentTimer][3]
+				, timer[1][currentTimer][2]
+				, timer[1][currentTimer][1]
+				, timer[1][currentTimer][0]);
 		print(str);
 
-		setCursor((timerState? size2 : size1) - 3, timerState);
+		setCursor((currectTimerState? size2 : size1) - 3*(currentTimerVal) - 1, currectTimerState);
 		blink();
 	  }
 
