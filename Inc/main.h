@@ -70,7 +70,7 @@ void Error_Handler(void);
 #define TCK_SWCLK_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 unsigned char currentTimer;
-unsigned char currectTimerState;
+unsigned char currectTimerState;//0 off, 1 on
 unsigned char currentTimerVal;//0 centiseconds,1 seconds, 2 min, 3 hours
 
 unsigned char timerCount;

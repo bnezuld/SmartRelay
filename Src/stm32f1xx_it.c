@@ -56,6 +56,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim7;
 /* USER CODE BEGIN EV */
@@ -197,6 +198,40 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f1xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles TIM3 global interrupt.
+  */
+void TIM3_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM3_IRQn 0 */
+	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_2);
+		  int read = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2);
+		  if(read == 1)//timer set when on(relay off)
+		  {
+			  float totalSeconds = ((float)timer[0][1][3] * 60*60)
+								  +((float)timer[0][1][2] * 60)
+								  +((float)timer[0][1][1])
+								  +((float)timer[0][1][0] * .01);
+			  TIM3->ARR = GetDesiredPeriodandPrescaler(totalSeconds);
+			  TIM3->PSC = TIM3->ARR;
+			  TIM3->EGR = TIM_EGR_UG;//seems to only be needed when changing prescaler(PSC)
+		  }else//timer set for off(relay on)
+		  {
+			  float totalSeconds = ((float)timer[1][1][3] * 60*60)
+								  +((float)timer[1][1][2] * 60)
+								  +((float)timer[1][1][1])
+								  +((float)timer[1][1][0] * .01);
+			  TIM3->ARR = GetDesiredPeriodandPrescaler(totalSeconds);
+			  TIM3->PSC = TIM3->ARR;
+			  TIM3->EGR = TIM_EGR_UG;//seems to only be needed when changing prescaler(PSC)
+		  }
+  /* USER CODE END TIM3_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim3);
+  /* USER CODE BEGIN TIM3_IRQn 1 */
+
+  /* USER CODE END TIM3_IRQn 1 */
+}
 
 /**
   * @brief This function handles TIM4 global interrupt.
