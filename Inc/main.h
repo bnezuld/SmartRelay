@@ -73,9 +73,6 @@ unsigned char currentTimer;
 unsigned char currectTimerState;//0 off, 1 on
 unsigned char currentTimerVal;//0 centiseconds,1 seconds, 2 min, 3 hours
 
-unsigned char timerCount;
-unsigned char timer[2][4][4];
-
 bool displayChange;
 /* USER CODE END Private defines */
 

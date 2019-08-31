@@ -52,7 +52,11 @@ unsigned char currectTimerState = 0;
 unsigned char currectTimerVal = 0;
 
 unsigned char timerCount = 4;
-unsigned char timer[2][4][4] = {{{0,0,0,10},{0,0,5,0},{0,0,0,0},{0,0,0,0}},{{0,0,0,14},{0,0,3,0},{0,0,0,0},{0,0,0,0}}};
+unsigned char timer[2][4][4] = {{{0,0,0,8},{0,0,5,0},{0,0,0,0},{0,0,0,0}},{{0,0,0,1},{0,0,3,0},{0,0,0,0},{0,0,0,0}}};
+
+unsigned int timerCounter[4] = {0,0,0,0};
+unsigned int timerPin[4] = {GPIO_PIN_3,GPIO_PIN_2, 0, 0};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,7 +107,7 @@ int main(void)
   MX_TIM7_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_3,1);//set high to keep current going through NO(Normally Open)
+  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_3,0);//set low to keep current going through NC(Normally closed)
   HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,1);//set high to keep current going through NO(Normally Open)
 
   HAL_TIM_Base_Start_IT(&htim7);
@@ -114,6 +118,7 @@ int main(void)
 
   char str[50];
   displayChange = true;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -126,23 +131,26 @@ int main(void)
 	  if(displayChange)
 	  {
 		displayChange = false;
+		clear();
 
 		setCursor(0, 0);
-		int size1 = sprintf(str, "- %1d %02u:%02u:%02u.%02u"
+		int size1 = sprintf(str, "- %1d %02u:%02u:%02u.%02u%1d"
 				, currentTimer
 				, timer[0][currentTimer][3]
 				, timer[0][currentTimer][2]
 				, timer[0][currentTimer][1]
-				, timer[0][currentTimer][0]);
+				, timer[0][currentTimer][0]
+				, HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_3));
 		print(str);
 
 		setCursor(0, 1);
-		int size2 = sprintf(str, "+ %1d %02u:%02u:%02u.%02u"
+		int size2 = sprintf(str, "+ %1d %02u:%02u:%02u.%02u%1d"
 				, currentTimer
 				, timer[1][currentTimer][3]
 				, timer[1][currentTimer][2]
 				, timer[1][currentTimer][1]
-				, timer[1][currentTimer][0]);
+				, timer[1][currentTimer][0]
+											, HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_3));
 		print(str);
 
 		setCursor((currectTimerState? size2 : size1) - 3*(currentTimerVal) - 1, currectTimerState);
@@ -299,14 +307,14 @@ static void MX_TIM7_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   /* USER CODE BEGIN TIM7_Init 1 */
-  int period = GetDesiredPeriodandPrescaler(10);
+  int period = GetDesiredPeriodandPrescaler(.01,62500);
   int prescaler = period;
 
   /* USER CODE END TIM7_Init 1 */
   htim7.Instance = TIM7;
-  htim7.Init.Prescaler = 0;
+  htim7.Init.Prescaler = prescaler;
   htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim7.Init.Period = 0;
+  htim7.Init.Period = period;
   htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
   {

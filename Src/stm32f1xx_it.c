@@ -205,27 +205,7 @@ void SysTick_Handler(void)
 void TIM3_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM3_IRQn 0 */
-	HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_2);
-		  int read = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2);
-		  if(read == 1)//timer set when on(relay off)
-		  {
-			  float totalSeconds = ((float)timer[0][1][3] * 60*60)
-								  +((float)timer[0][1][2] * 60)
-								  +((float)timer[0][1][1])
-								  +((float)timer[0][1][0] * .01);
-			  TIM3->ARR = GetDesiredPeriodandPrescaler(totalSeconds);
-			  TIM3->PSC = TIM3->ARR;
-			  TIM3->EGR = TIM_EGR_UG;//seems to only be needed when changing prescaler(PSC)
-		  }else//timer set for off(relay on)
-		  {
-			  float totalSeconds = ((float)timer[1][1][3] * 60*60)
-								  +((float)timer[1][1][2] * 60)
-								  +((float)timer[1][1][1])
-								  +((float)timer[1][1][0] * .01);
-			  TIM3->ARR = GetDesiredPeriodandPrescaler(totalSeconds);
-			  TIM3->PSC = TIM3->ARR;
-			  TIM3->EGR = TIM_EGR_UG;//seems to only be needed when changing prescaler(PSC)
-		  }
+
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
   /* USER CODE BEGIN TIM3_IRQn 1 */
@@ -340,27 +320,15 @@ void EXTI15_10_IRQHandler(void)
 void TIM7_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM7_IRQn 0 */
-  HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_3);
-  int read = HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_3);
-  if(read == 1)//timer set when on(relay off)
-  {
-	  float totalSeconds = ((float)timer[0][0][3] * 60*60)
-						  +((float)timer[0][0][2] * 60)
-						  +((float)timer[0][0][1])
-						  +((float)timer[0][0][0] * .01);
-	  TIM7->ARR = GetDesiredPeriodandPrescaler(totalSeconds);
-	  TIM7->PSC = TIM7->ARR;
-	  TIM7->EGR = TIM_EGR_UG;//seems to only be needed when changing prescaler(PSC)
-  }else//timer set for off(relay on)
-  {
-	  float totalSeconds = ((float)timer[1][0][3] * 60*60)
-						  +((float)timer[1][0][2] * 60)
-						  +((float)timer[1][0][1])
-						  +((float)timer[1][0][0] * .01);
-	  TIM7->ARR = GetDesiredPeriodandPrescaler(totalSeconds);
-	  TIM7->PSC = TIM7->ARR;
-	  TIM7->EGR = TIM_EGR_UG;//seems to only be needed when changing prescaler(PSC)
-  }
+	for(int timerNumber = 0; timerNumber < 2; timerNumber++)
+	{
+		int read = HAL_GPIO_ReadPin(GPIOC,timerPin[timerNumber]);
+		if(UpdateTimer(timerNumber, read) == 1)
+		{
+			HAL_GPIO_TogglePin(GPIOC,timerPin[timerNumber]);
+			displayChange = true;
+		}
+	}
   /* USER CODE END TIM7_IRQn 0 */
   HAL_TIM_IRQHandler(&htim7);
   /* USER CODE BEGIN TIM7_IRQn 1 */
