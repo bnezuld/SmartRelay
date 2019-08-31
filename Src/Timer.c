@@ -38,7 +38,7 @@ char UpdateTimer(int timerNumber,int pinState)
 							  +((float)timer[1][timerNumber][1] * 100)
 							  +((float)timer[1][timerNumber][0]);
 	  }
-	  if(timerCounter[timerNumber] >= triggerTime)
+	  if(timerCounter[timerNumber] != 0 && timerCounter[timerNumber] >= triggerTime)
 	  {
 		  timerCounter[timerNumber] = 0;
 		  togglePin = 1;

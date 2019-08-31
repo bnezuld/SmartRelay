@@ -42,7 +42,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim7;
 
@@ -52,7 +51,7 @@ unsigned char currectTimerState = 0;
 unsigned char currectTimerVal = 0;
 
 unsigned char timerCount = 4;
-unsigned char timer[2][4][4] = {{{0,0,0,8},{0,0,5,0},{0,0,0,0},{0,0,0,0}},{{0,0,0,1},{0,0,3,0},{0,0,0,0},{0,0,0,0}}};
+unsigned char timer[2][4][4] = {{{0,0,0,8},{0,5,0,0},{0,0,0,0},{0,0,0,0}},{{0,0,0,1},{0,3,0,0},{0,0,0,0},{0,0,0,0}}};
 
 unsigned int timerCounter[4] = {0,0,0,0};
 unsigned int timerPin[4] = {GPIO_PIN_3,GPIO_PIN_2, 0, 0};
@@ -64,7 +63,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM7_Init(void);
-static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -105,13 +103,11 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM4_Init();
   MX_TIM7_Init();
-  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(GPIOC,GPIO_PIN_3,0);//set low to keep current going through NC(Normally closed)
-  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,1);//set high to keep current going through NO(Normally Open)
+  HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,0);//set low to keep current going through NC(Normally closed)
 
   HAL_TIM_Base_Start_IT(&htim7);
-  HAL_TIM_Base_Start_IT(&htim3);
   HAL_TIM_Base_Start_IT(&htim4);
 
   LiquidCrystal(GPIOA, GPIO_PIN_15, 0, GPIO_PIN_12, GPIO_PIN_11, GPIO_PIN_10, GPIO_PIN_9, GPIO_PIN_8);
@@ -134,23 +130,21 @@ int main(void)
 		clear();
 
 		setCursor(0, 0);
-		int size1 = sprintf(str, "- %1d %02u:%02u:%02u.%02u%1d"
+		int size1 = sprintf(str, "- %1d %02u:%02u:%02u.%02u"
 				, currentTimer
 				, timer[0][currentTimer][3]
 				, timer[0][currentTimer][2]
 				, timer[0][currentTimer][1]
-				, timer[0][currentTimer][0]
-				, HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_3));
+				, timer[0][currentTimer][0]);
 		print(str);
 
 		setCursor(0, 1);
-		int size2 = sprintf(str, "+ %1d %02u:%02u:%02u.%02u%1d"
+		int size2 = sprintf(str, "+ %1d %02u:%02u:%02u.%02u"
 				, currentTimer
 				, timer[1][currentTimer][3]
 				, timer[1][currentTimer][2]
 				, timer[1][currentTimer][1]
-				, timer[1][currentTimer][0]
-											, HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_3));
+				, timer[1][currentTimer][0]);
 		print(str);
 
 		setCursor((currectTimerState? size2 : size1) - 3*(currentTimerVal) - 1, currectTimerState);
@@ -186,62 +180,14 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV16;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV16;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief TIM3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM3_Init(void)
-{
-
-  /* USER CODE BEGIN TIM3_Init 0 */
-
-  /* USER CODE END TIM3_Init 0 */
-
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
-  /* USER CODE BEGIN TIM3_Init 1 */
-
-  /* USER CODE END TIM3_Init 1 */
-  htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
-  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 0;
-  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_OC_Init(&htim3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_TIMING;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_OC_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM3_Init 2 */
-
-  /* USER CODE END TIM3_Init 2 */
-
 }
 
 /**
@@ -307,7 +253,7 @@ static void MX_TIM7_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
   /* USER CODE BEGIN TIM7_Init 1 */
-  int period = GetDesiredPeriodandPrescaler(.01,62500);
+  int period = GetDesiredPeriodandPrescaler(.01,8000000);
   int prescaler = period;
 
   /* USER CODE END TIM7_Init 1 */
