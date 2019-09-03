@@ -45,17 +45,22 @@
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim7;
 
+UART_HandleTypeDef huart2;
+
 /* USER CODE BEGIN PV */
 unsigned char currentTimer = 0;
 unsigned char currectTimerState = 0;
 unsigned char currectTimerVal = 0;
 
 unsigned char timerCount = 4;
-unsigned char timer[2][4][4] = {{{0,0,0,8},{0,5,0,0},{0,0,0,0},{0,0,0,0}},{{0,0,0,1},{0,3,0,0},{0,0,0,0},{0,0,0,0}}};
+unsigned char timer[2][4][4] = {{{0,0,0,8},{0,0,5,0},{0,0,0,0},{0,0,0,0}},{{0,0,0,16},{0,0,3,0},{0,0,0,0},{0,0,0,0}}};
 
 unsigned int timerCounter[4] = {0,0,0,0};
 unsigned int timerPin[4] = {GPIO_PIN_3,GPIO_PIN_2, 0, 0};
 
+uint8_t tx_buff[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+uint8_t rx_buff[10],rx_data[2];
+uint8_t  Rx_indx = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,6 +68,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM7_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -103,6 +109,7 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM4_Init();
   MX_TIM7_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_GPIO_WritePin(GPIOC,GPIO_PIN_3,0);//set low to keep current going through NC(Normally closed)
   HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,0);//set low to keep current going through NC(Normally closed)
@@ -112,9 +119,11 @@ int main(void)
 
   LiquidCrystal(GPIOA, GPIO_PIN_15, 0, GPIO_PIN_12, GPIO_PIN_11, GPIO_PIN_10, GPIO_PIN_9, GPIO_PIN_8);
 
-  char str[50];
+  char str1[50],str2[50];
   displayChange = true;
 
+  //HAL_UART_Receive_IT(&huart2,rx_data,1);
+  //HAL_UART_Transmit_IT(&huart2,tx_buff,1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,28 +136,37 @@ int main(void)
 	  if(displayChange)
 	  {
 		displayChange = false;
-		clear();
+		//clear();
 
 		setCursor(0, 0);
-		int size1 = sprintf(str, "- %1d %02u:%02u:%02u.%02u"
+		int size1 = sprintf(str1, "- %1d %02u:%02u:%02u.%02u"
 				, currentTimer
 				, timer[0][currentTimer][3]
 				, timer[0][currentTimer][2]
 				, timer[0][currentTimer][1]
 				, timer[0][currentTimer][0]);
-		print(str);
+		print(str1);
 
 		setCursor(0, 1);
-		int size2 = sprintf(str, "+ %1d %02u:%02u:%02u.%02u"
+		int size2 = sprintf(str2, "+ %1d %02u:%02u:%02u.%02u"
 				, currentTimer
 				, timer[1][currentTimer][3]
 				, timer[1][currentTimer][2]
 				, timer[1][currentTimer][1]
 				, timer[1][currentTimer][0]);
-		print(str);
+		print(str2);
+		//print(rx_buff);
 
 		setCursor((currectTimerState? size2 : size1) - 3*(currentTimerVal) - 1, currectTimerState);
 		blink();
+		str1[size1++] = '\r';
+		str1[size1++] = '\n';
+		HAL_UART_Transmit(&huart2,str1,size1,1000);
+
+
+		str2[size2++] = '\r';
+		str2[size2++] = '\n';
+		HAL_UART_Transmit(&huart2,str2,size2,1000);
 	  }
 
 	  asm ("");
@@ -275,6 +293,39 @@ static void MX_TIM7_Init(void)
   /* USER CODE BEGIN TIM7_Init 2 */
 
   /* USER CODE END TIM7_Init 2 */
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 9600;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 

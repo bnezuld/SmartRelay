@@ -58,6 +58,7 @@
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim4;
 extern TIM_HandleTypeDef htim7;
+extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -214,6 +215,20 @@ void TIM4_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles USART2 global interrupt.
+  */
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+
+  /* USER CODE END USART2_IRQn 0 */
+  HAL_UART_IRQHandler(&huart2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
+}
+
+/**
   * @brief This function handles EXTI line[15:10] interrupts.
   */
 void EXTI15_10_IRQHandler(void)
@@ -284,7 +299,7 @@ void EXTI15_10_IRQHandler(void)
 			displayChange = true;
 		}
 
-		TIM4->ARR = 112*112;//GetDesiredPeriodandPrescaler(.2);
+		TIM4->ARR = GetDesiredPeriodandPrescaler(.15,8000000);
 		//TIM4->ARR *= TIM4->ARR;
 	}
 
